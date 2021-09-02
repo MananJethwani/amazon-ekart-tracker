@@ -1,15 +1,28 @@
-const puppeteer = require('puppeteer');
-const { parse } = require('node-html-parser');
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
+const url = require('./routes/url');
+const cron = require("node-cron");
+const { updatePrices } = require("./util/updatedPrices");
 
-async function valueExtractor(url) {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(url);
-    const data = await page.evaluate(() => document.querySelector('*').outerHTML);
-    await browser.close();
-    const dom = parse(data);
-    const price = parseInt(dom.querySelector('.priceBlockBuyingPriceString').innerHTML.slice(1).split('.')[0].split(',').join(''));
-    return price;
-}
+mongoose
+  .connect("mongodb://localhost/Users")
+  .then(() => console.log("connected to MongoDB"))
+  .catch((err) => console.error("could not connect to MongoDB...", err));
 
-main();
+var allowCrossDomain = function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    next();
+};
+
+app.use(express.json());
+app.use(allowCrossDomain);
+app.use('/url', url);
+
+
+const port = process.env.PORT || 3001;
+app.listen(port, () => console.log(`listening on port ${port}`));
+
+cron.schedule('* * * * *', updatePrices);
