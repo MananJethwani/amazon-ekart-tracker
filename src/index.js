@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const url = require('./routes/url');
+const email = require('./routes/email');
 const cron = require("node-cron");
 const { updatePrices } = require("./util/updatedPrices");
 
@@ -20,9 +21,10 @@ var allowCrossDomain = function (req, res, next) {
 app.use(express.json());
 app.use(allowCrossDomain);
 app.use('/url', url);
+app.use('/email', email);
 
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`listening on port ${port}`));
 
-cron.schedule('* * * * *', updatePrices);
+cron.schedule('0 8 * * *', updatePrices);

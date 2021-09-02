@@ -21,6 +21,7 @@
     "mongoose": "^6.0.3",
     "node-cron": "^3.0.0",
     "node-html-parser": "^4.1.4",
+    "nodemailer": "^6.6.3",
     "puppeteer": "^10.2.0"
   }
 }

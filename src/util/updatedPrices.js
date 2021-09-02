@@ -1,6 +1,16 @@
 // const mongoose = require("mongoose");
 const { Url } = require("../models/url");
 const {ini, urlValueExtractor, close} = require("../util/extractor");
+const { Email } = require("../models/email");
+const nodemailer = require("nodemailer");
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+    }
+});
 
 async function updatePrices() {
     await ini();
@@ -20,7 +30,21 @@ async function updatePrices() {
         if (value < url.minimum_value) {
             const min = value;
             await Url.findOneAndUpdate({url: url.url}, {minimum_value: min});
-            console.log('sending mails');
+            const { emails } = (await Email.findOne({url: url.url}));
+            emails.forEach(email => {
+                let mailOptions = {
+                    from: 'manan.roxx28@gmail.com', 
+                    to: email,
+                    subject: 'Price change alert',
+                    text: `Price changed for ${url.url} to ${min}`
+                };
+                transporter.sendMail(mailOptions, (err, data) => {
+                    if (err) {
+                        console.log(err);
+                        return console.log('Error occurs');
+                    }
+                });            
+            });
         }
     });
 }

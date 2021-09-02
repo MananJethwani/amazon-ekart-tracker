@@ -1,11 +1,10 @@
 const { Router } = require("express");
 const router = Router();
 const { Url } = require('../models/url');
+const { Email } = require("../models/email");
 const {ini, urlNameExtractor, urlValueExtractor, close} = require("../util/extractor");
 
 router.post('/', async (req, res) => {
-    // browser = await puppeteer.launch();
-    // page = await browser.newPage();
     await ini();
     const entry = await Url.findOne({url: req.body.url});
     const name = await urlNameExtractor(req.body.url);
@@ -24,7 +23,13 @@ router.post('/', async (req, res) => {
       minimum_value: firstPrice
     });
 
+    const emails = new Email({
+        url: req.body.url,
+        emails: []
+    });
+
     await url.save();
+    await emails.save();
     await close();
     return res.status(200).send(await Url.find({}));
 });
@@ -35,6 +40,7 @@ router.get('/', async (req, res) => {
 
 router.delete('/', async (req, res) => {
     await Url.findOneAndDelete({url: req.body.url});
+    await Url.save();
     return res.status(200).send();
 });
 
