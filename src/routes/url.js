@@ -63,7 +63,29 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
-    return res.send(await Url.find({}));
+    const data = await Url.find({});
+    const result = [];
+    data.forEach((data) => {
+        const name = data.name;
+        const id = data._id;
+        const min_value = data.minimum_value;
+        let i=0;
+        let ans=0;
+        data.values.forEach((val) => {
+            if(val==min_value) {
+                ans=i;
+            }
+            i++;
+        });
+        const date = data.dates[ans];
+        result.push({
+            name,
+            id,
+            minimum_value: min_value,
+            date
+        });
+    });
+    return res.send(result);
 });
 
 router.delete('/', async (req, res) => {
