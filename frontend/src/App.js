@@ -5,6 +5,7 @@ import { Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./components/home";
+import Url from "./components/url";
 
 function App() {
 
@@ -32,9 +33,9 @@ function App() {
         </Container>
       </Navbar>
       <Switch>
-          {/* <Route path="/users">
-            <Users />
-          </Route> */}
+          <Route path="/url">
+            <Url />
+          </Route>
           <Route path="/">
             <Home />
           </Route>

@@ -9,6 +9,10 @@ const urlSchhema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    imageUrl: {
+        type:String,
+        required: true,
+    },
     values: [Number],
     dates: [Date],
     created_at: {

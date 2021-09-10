@@ -34,9 +34,21 @@ const urlNameExtractor = async (url) => {
     return name;
 }
 
+const urlImageExtractor = async (url) => {
+    const { data } = await axios.get(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'
+        }
+    })
+    const dom = parse(data);
+    let imageUrl = dom.querySelector('.a-dynamic-image').getAttribute('src');
+    return imageUrl;
+}
+
 router.post('/', async (req, res) => {
     const entry = await Url.findOne({url: req.body.url});
     const name = await urlNameExtractor(req.body.url);
+    const imageUrl = await urlImageExtractor(req.body.url);
     if(entry) { return res.status(400).send('URL already exsists'); }
 
     const firstPrice = await urlValueExtractor(req.body.url);
@@ -46,6 +58,7 @@ router.post('/', async (req, res) => {
     const url = new Url({
       name: name,
       url: req.body.url,
+      imageUrl: imageUrl,
       values: values,
       dates: dates,
       created_at: Date.now(),
@@ -86,6 +99,10 @@ router.get('/', async (req, res) => {
         });
     });
     return res.send(result);
+});
+
+router.get('/find', async (req, res) => {
+    res.send(await Url.findOne({_id: req.query.id}));
 });
 
 router.delete('/', async (req, res) => {
