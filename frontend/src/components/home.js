@@ -80,7 +80,7 @@ function Home() {
       <Modal show={show} onHide={handleClose}>
         <Modal.Header>
           <Modal.Title>Modal heading</Modal.Title>
-          <button class="btn-close" onClick={handleClose}></button>
+          <button className="btn-close" onClick={handleClose}></button>
         </Modal.Header>
         <Modal.Body>
           <Form id="url" onSubmit={submitUrl}>

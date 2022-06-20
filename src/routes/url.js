@@ -15,7 +15,15 @@ const urlValueExtractor = async (url) => {
         console.log(error);
     });
     const dom = parse(data);
-    const price = parseInt((dom.querySelector('.priceBlockBuyingPriceString') || dom.querySelector('.priceBlockDealPriceString')).innerHTML.slice(1).split('.')[0].split(',').join(''));
+  const price = parseInt(
+    (
+      dom.querySelector(".a-price-whole") ||
+      dom.querySelector(".priceBlockDealPriceString")
+    ).innerHTML
+      .split(".")[0]
+      .split(",")
+      .join("")
+  );
     return price;
 }
 
