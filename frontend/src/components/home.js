@@ -16,15 +16,16 @@ function Home() {
 
   useEffect(() => {
     axios.get("http://localhost:3001/url").then(({ data }) => {
+      console.log(data);
       setUrlData(data);
     });
-  });
+  }, []);
 
   const postUrl = async (url) => {
     const result = await axios.post("http://localhost:3001/url", {
       url: url,
     });
-    setUrlData(result);
+    setUrlData(result.data);
   };
 
   const submitUrl = (event) => {

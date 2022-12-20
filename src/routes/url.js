@@ -6,36 +6,36 @@ const axios = require("axios");
 const { parse } = require('node-html-parser');
 
 const urlValueExtractor = async (url) => {
-    const { data } = await  axios.get(url, {
+    const { data } = await axios.get(url, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'
         }
     })
-    .catch(function (error) {
-        console.log(error);
-    });
+        .catch(function (error) {
+            console.log(error);
+        });
     const dom = parse(data);
-  const price = parseInt(
-    (
-      dom.querySelector(".a-price-whole") ||
-      dom.querySelector(".priceBlockDealPriceString")
-    ).innerHTML
-      .split(".")[0]
-      .split(",")
-      .join("")
-  );
+    const price = parseInt(
+        (
+            dom.querySelector(".a-price-whole") ||
+            dom.querySelector(".priceBlockDealPriceString")
+        ).innerHTML
+            .split(".")[0]
+            .split(",")
+            .join("")
+    );
     return price;
 }
 
 const urlNameExtractor = async (url) => {
-    const { data } = await  axios.get(url, {
+    const { data } = await axios.get(url, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'
         }
     })
-    .catch(function (error) {
-        console.log(error);
-    });
+        .catch(function (error) {
+            console.log(error);
+        });
     const dom = parse(data);
     let name = dom.querySelector('.product-title-word-break').innerHTML;
     name = name.trim();
@@ -54,23 +54,23 @@ const urlImageExtractor = async (url) => {
 }
 
 router.post('/', async (req, res) => {
-    const entry = await Url.findOne({url: req.body.url});
+    const entry = await Url.findOne({ url: req.body.url });
     const name = await urlNameExtractor(req.body.url);
     const imageUrl = await urlImageExtractor(req.body.url);
-    if(entry) { return res.status(400).send('URL already exsists'); }
+    if (entry) { return res.status(400).send('URL already exsists'); }
 
     const firstPrice = await urlValueExtractor(req.body.url);
     const values = [firstPrice];
     const dates = [Date.now()];
 
     const url = new Url({
-      name: name,
-      url: req.body.url,
-      imageUrl: imageUrl,
-      values: values,
-      dates: dates,
-      created_at: Date.now(),
-      minimum_value: firstPrice
+        name: name,
+        url: req.body.url,
+        imageUrl: imageUrl,
+        values: values,
+        dates: dates,
+        created_at: Date.now(),
+        minimum_value: firstPrice
     });
 
     const emails = new Email({
@@ -90,11 +90,11 @@ router.get('/', async (req, res) => {
         const name = data.name;
         const id = data._id;
         const min_value = data.minimum_value;
-        let i=0;
-        let ans=0;
+        let i = 0;
+        let ans = 0;
         data.values.forEach((val) => {
-            if(val==min_value) {
-                ans=i;
+            if (val == min_value) {
+                ans = i;
             }
             i++;
         });
@@ -110,11 +110,11 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/find', async (req, res) => {
-    res.send(await Url.findOne({_id: req.query.id}));
+    res.send(await Url.findOne({ _id: req.query.id }));
 });
 
 router.delete('/', async (req, res) => {
-    await Url.findOneAndDelete({url: req.body.url});
+    await Url.findOneAndDelete({ url: req.body.url });
     await Url.save();
     return res.status(200).send();
 });
